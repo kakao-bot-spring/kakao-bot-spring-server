@@ -2,16 +2,21 @@ package com.thuthi.kakaobotspringserver;
 
 import com.thuthi.kakaobotspringserver.domain.ChatData;
 import com.thuthi.kakaobotspringserver.domain.Command;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.function.Function;
 
+@Component
 public class CommandHandler {
-    private static final HashMap<Command, Function<ChatData, String>> eventMapper = new HashMap<>() {{
+    private final HashMap<Command, Function<ChatData, String>> eventMapper = new HashMap<>();
+
+    public CommandHandler() {
         eventMapper.put(Command.HELLO, (chatData) -> "hello");
         eventMapper.put(Command.MESSAGE, ChatData::toString);
-    }};
-    public static String handle(Command command, ChatData chatData) {
+    }
+
+    public String handle(Command command, ChatData chatData) {
         if (!eventMapper.containsKey(command)) {
             return "[Error]Invalid Command";
         }

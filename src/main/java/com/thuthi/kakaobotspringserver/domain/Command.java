@@ -5,9 +5,6 @@ public enum Command {
     HELLO("hello")
     ;
 
-    private final String value;
-
     Command(String value) {
-        this.value = value;
     }
 }

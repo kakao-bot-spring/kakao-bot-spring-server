@@ -1,23 +1,22 @@
 package com.thuthi.kakaobotspringserver.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thuthi.kakaobotspringserver.CommandHandler;
 import com.thuthi.kakaobotspringserver.api.dto.KakaoRequestDto;
 import com.thuthi.kakaobotspringserver.domain.ChatData;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.apache.logging.log4j.message.ParameterizedMessage.deepToString;
-
+@RequiredArgsConstructor
 @RestController
 public class HelloApiController {
+    private final CommandHandler commandHandler;
     @PostMapping("/")
-    public String hello(@RequestBody KakaoRequestDto kakaoRequestDto) throws JsonProcessingException {
-        System.out.println("HelloApiController.hello");
-        System.out.println("kakaoRequestDto = " + deepToString(kakaoRequestDto));
-        ChatData chatData = (new ObjectMapper()).readValue(kakaoRequestDto.getData().toString(), ChatData.class);
-        return CommandHandler.handle(kakaoRequestDto.getCommand(), chatData);
+    public String hello(@RequestBody KakaoRequestDto kakaoRequestDto) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ChatData chatData = objectMapper.convertValue(kakaoRequestDto.getData(), ChatData.class);
+        return commandHandler.handle(kakaoRequestDto.getCommand(), chatData);
     }
 }

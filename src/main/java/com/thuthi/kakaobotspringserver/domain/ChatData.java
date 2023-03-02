@@ -2,18 +2,20 @@ package com.thuthi.kakaobotspringserver.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 public class ChatData {
-    final private String room;
-    final private String msg;
-    final private String sender;
-    final private Boolean isGroupChat;
-    final private String replier;
-    final private String packageName;
+    private String room;
+    private String msg;
+    private String sender;
+    private Boolean isGroupChat;
+    private String replier;
+    private String packageName;
 }
