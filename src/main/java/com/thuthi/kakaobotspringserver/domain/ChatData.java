@@ -1,15 +1,15 @@
 package com.thuthi.kakaobotspringserver.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @ToString
-public class Message implements Serializable {
+public class ChatData {
     final private String room;
     final private String msg;
     final private String sender;
