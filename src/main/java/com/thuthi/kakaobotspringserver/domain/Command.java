@@ -1,10 +1,8 @@
 package com.thuthi.kakaobotspringserver.domain;
 
 public enum Command {
-    MESSAGE("message"),
-    HELLO("hello")
+    MESSAGE,
+    HELLO,
+    ECHO
     ;
-
-    Command(String value) {
-    }
 }
