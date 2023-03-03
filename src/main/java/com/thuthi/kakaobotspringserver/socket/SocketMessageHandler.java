@@ -47,7 +47,7 @@ public class SocketMessageHandler extends Thread {
 
     private String getResult(String line) throws JsonProcessingException {
         HashMap<String, Object> hashMap = objectMapper.readValue(line, HashMap.class);
-        Command command = Command.valueOf(((String)hashMap.get("message")).toUpperCase());
+        Command command = Command.valueOf(((String)hashMap.get("command")).toUpperCase());
         ChatData chatData = objectMapper.convertValue(hashMap.get("data"), ChatData.class);
         return commandHandler.handle(command, chatData) + '\n';
     }
