@@ -1,6 +1,6 @@
 package com.thuthi.kakaobotspringserver.socket;
 
-import com.thuthi.kakaobotspringserver.CommandHandler;
+import com.thuthi.kakaobotspringserver.commandHandler.CommandHandlerMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import java.net.Socket;
 public class SocketServer {
     @Value("${socket.port}")
     public int PORT;
-    private final CommandHandler commandHandler;
+    private final CommandHandlerMapper commandHandlerMapper;
     public void start() {
         new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(PORT)){
@@ -23,7 +23,7 @@ public class SocketServer {
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     log.info("[SOCKET]client 연결 성공");
-                    new SocketMessageHandler(clientSocket, commandHandler).start();
+                    new SocketMessageHandler(clientSocket, commandHandlerMapper).start();
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
