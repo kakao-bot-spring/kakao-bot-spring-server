@@ -19,7 +19,7 @@ public class SocketServer {
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     log.info("[SOCKET]client 연결 성공");
-                    new SocketHandler(clientSocket).start();
+                    new SocketMessageHandler(clientSocket).start();
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());

@@ -9,20 +9,18 @@ import java.nio.charset.StandardCharsets;
 
 @Log4j2
 @RequiredArgsConstructor
-public class SocketHandler extends Thread {
+public class SocketMessageHandler extends Thread {
     private final Socket socket;
     @Override
     public void run() {
-        try (DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));) {
-            while (true) {
-                String line;
-                while(!socket.isClosed() && (line = in.readLine()) != null) {
-                    line += '\n';
-                    dout.write(line.getBytes(StandardCharsets.UTF_8));
-                    dout.flush();
-                    log.info("[SOCKET] message: " + line);
-                }
+        try (DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+             BufferedReader inputSream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));) {
+            String line;
+            while(!socket.isClosed() && (line = inputSream.readLine()) != null) {
+                log.info("[SOCKET] received message: " + line);
+                line += '\n';
+                outputStream.write(line.getBytes(StandardCharsets.UTF_8));
+                outputStream.flush();
             }
         } catch (Exception e) {
             log.error(e);
