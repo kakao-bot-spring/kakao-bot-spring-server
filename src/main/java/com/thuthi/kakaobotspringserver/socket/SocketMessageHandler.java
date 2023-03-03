@@ -27,7 +27,7 @@ public class SocketMessageHandler extends Thread {
             while(!socket.isClosed() && (inputString = inputSream.readLine()) != null) {
                 log.info("[SOCKET] received message: " + inputString);
                 String result = getResult(inputString);
-                outputStream.write(getResult(inputString).getBytes(StandardCharsets.UTF_8));
+                outputStream.write((result + '\n').getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
                 log.info("[SOCKET] sended message: " + result);
             }
@@ -49,6 +49,6 @@ public class SocketMessageHandler extends Thread {
         HashMap<String, Object> hashMap = objectMapper.readValue(line, HashMap.class);
         Command command = Command.valueOf(((String)hashMap.get("command")).toUpperCase());
         ChatData chatData = objectMapper.convertValue(hashMap.get("data"), ChatData.class);
-        return commandHandler.handle(command, chatData) + '\n';
+        return commandHandler.handle(command, chatData);
     }
 }
