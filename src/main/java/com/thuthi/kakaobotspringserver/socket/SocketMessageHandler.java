@@ -23,19 +23,8 @@ public class SocketMessageHandler extends Thread {
     @Override
     public void run() {
         try (DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-             BufferedReader inputSream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));) {
-            String inputString;
-            while(!socket.isClosed() && (inputString = inputSream.readLine()) != null) {
-                log.info("[SOCKET] received message: " + inputString);
-                Optional<String> result = getResult(inputString);
-                if (result.isEmpty()) {
-                    continue;
-                }
-
-                outputStream.write((result.get() + '\n').getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
-                log.info("[SOCKET] sended message: " + result.get());
-            }
+             BufferedReader inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));) {
+            processIO(inputStream, outputStream);
         } catch (Exception e) {
             log.error(e);
         } finally {
@@ -47,6 +36,21 @@ public class SocketMessageHandler extends Thread {
             } catch (Exception e) {
                 log.error(e);
             }
+        }
+    }
+
+    private void processIO(BufferedReader inputStream, DataOutputStream outputStream) throws IOException {
+        String inputString;
+        while(!socket.isClosed() && (inputString = inputStream.readLine()) != null) {
+            log.info("[SOCKET] received message: " + inputString);
+            Optional<String> result = getResult(inputString);
+            if (result.isEmpty()) {
+                continue;
+            }
+
+            outputStream.write((result.get() + '\n').getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+            log.info("[SOCKET] sended message: " + result.get());
         }
     }
 
