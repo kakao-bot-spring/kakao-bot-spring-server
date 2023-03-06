@@ -17,6 +17,7 @@ public class CommandHandlerMapper {
         eventMapper.put(Command.HELLO, (chatData) -> new ResultMessage(ResultStatus.SUCCESS, "hello"));
         addCommandHandler(Command.ECHO, new EchoCommandHandler());
         addCommandHandler(Command.EXIT, new ExitCommandHandler());
+        addCommandHandler(Command.MESSAGE, new PpomppuCommandHandler());
     }
 
     public boolean addCommandHandler(Command command, CommandHandler commandHandler) {
