@@ -7,26 +7,14 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public abstract class CommandHandler {
-    private final Optional<String> targetRoom;
-    private final Optional<String> targetSender;
+    private final Optional<TargetFilter> targetFilter;
 
     final public Optional<String> handle(ChatData chatdata) {
-        if (!isTargetRoom(chatdata.getRoom())) {
-            return Optional.empty();
-        }
-        if (!isTargetSender(chatdata.getSender())) {
+        if (!targetFilter.map(tf -> tf.filter(chatdata.getRoom(), chatdata.getSender())).orElse(false)) {
             return Optional.empty();
         }
         return Optional.of(process(chatdata));
     }
 
     abstract String process(ChatData chatData);
-
-    private boolean isTargetRoom(String room) {
-        return targetRoom.map(room::equals).orElse(true);
-    }
-
-    private boolean isTargetSender(String sender) {
-        return targetSender.map(sender::equals).orElse(true);
-    }
 }
