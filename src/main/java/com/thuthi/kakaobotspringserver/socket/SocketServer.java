@@ -23,7 +23,7 @@ public class SocketServer {
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     log.info("[SOCKET]client 연결 성공");
-                    new SocketMessageHandler(clientSocket, commandHandlerMapper).start();
+                    new SocketMessageHandler(clientSocket, commandHandlerMapper, "/").start();
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
