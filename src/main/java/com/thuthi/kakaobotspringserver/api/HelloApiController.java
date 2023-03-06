@@ -17,6 +17,6 @@ public class HelloApiController {
     public String hello(@RequestBody KakaoRequestDto kakaoRequestDto) {
         ObjectMapper objectMapper = new ObjectMapper();
         ChatData chatData = objectMapper.convertValue(kakaoRequestDto.getData(), ChatData.class);
-        return commandHandlerMapper.process(kakaoRequestDto.getCommand(), chatData).get();
+        return commandHandlerMapper.process(kakaoRequestDto.getCommand(), chatData).message();
     }
 }

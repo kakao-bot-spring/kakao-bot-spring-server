@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thuthi.kakaobotspringserver.domain.ChatData;
 
+import com.thuthi.kakaobotspringserver.domain.result.ResultMessage;
+import com.thuthi.kakaobotspringserver.domain.result.ResultStatus;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class EchoCommandHandler extends CommandHandler {
@@ -12,12 +15,13 @@ public class EchoCommandHandler extends CommandHandler {
     }
 
     @Override
-    String process(ChatData chatData) {
+    ResultMessage process(ChatData chatData) {
         try {
-            return (new ObjectMapper()).writeValueAsString(chatData);
+            String message = (new ObjectMapper()).writeValueAsString(chatData);
+            return new ResultMessage(ResultStatus.SUCCESS, message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return null;
+            return new ResultMessage(ResultStatus.FAIL, Arrays.toString(e.getStackTrace()));
         }
     }
 }

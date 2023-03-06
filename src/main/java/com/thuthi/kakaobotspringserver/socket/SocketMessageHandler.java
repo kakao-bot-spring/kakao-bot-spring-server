@@ -5,14 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thuthi.kakaobotspringserver.commandHandler.CommandHandlerMapper;
 import com.thuthi.kakaobotspringserver.domain.ChatData;
 import com.thuthi.kakaobotspringserver.domain.Command;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-
-import java.io.*;
+import com.thuthi.kakaobotspringserver.domain.result.ResultMessage;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -20,10 +22,12 @@ public class SocketMessageHandler extends Thread {
     private final Socket socket;
     private final CommandHandlerMapper commandHandlerMapper;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void run() {
-        try (DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-             BufferedReader inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));) {
+        try (DataOutputStream outputStream = new DataOutputStream(
+                socket.getOutputStream()); BufferedReader inputStream = new BufferedReader(
+                new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
             processIO(inputStream, outputStream);
         } catch (Exception e) {
             log.error(e);
@@ -41,22 +45,31 @@ public class SocketMessageHandler extends Thread {
 
     private void processIO(BufferedReader inputStream, DataOutputStream outputStream) throws IOException {
         String inputString;
-        while(!socket.isClosed() && (inputString = inputStream.readLine()) != null) {
+        while (!socket.isClosed() && (inputString = inputStream.readLine()) != null) {
             log.info("[SOCKET] received message: " + inputString);
-            Optional<String> result = getResult(inputString);
-            if (result.isEmpty()) {
-                continue;
-            }
 
-            outputStream.write((result.get() + '\n').getBytes(StandardCharsets.UTF_8));
-            outputStream.flush();
-            log.info("[SOCKET] sended message: " + result.get());
+            ResultMessage result = getResult(inputString);
+            switch (result.resultStatus()) {
+                case SUCCESS:
+                    outputStream.write((result.message() + '\n').getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
+                    log.info("[SOCKET] sended message: " + result.message());
+                    continue;
+
+                case FILTERED:
+                    log.info("[SOCKET] filtered");
+                    break;
+
+                case FAIL:
+                    log.info("[SOCKET] fail by " + result.message());
+                    break;
+            }
         }
     }
 
-    private Optional<String> getResult(String line) throws JsonProcessingException {
+    private ResultMessage getResult(String line) throws JsonProcessingException {
         HashMap<String, Object> hashMap = objectMapper.readValue(line, HashMap.class);
-        Command command = Command.valueOf(((String)hashMap.get("command")).toUpperCase());
+        Command command = Command.valueOf(((String) hashMap.get("command")).toUpperCase());
         ChatData chatData = objectMapper.convertValue(hashMap.get("data"), ChatData.class);
         return commandHandlerMapper.process(command, chatData);
     }

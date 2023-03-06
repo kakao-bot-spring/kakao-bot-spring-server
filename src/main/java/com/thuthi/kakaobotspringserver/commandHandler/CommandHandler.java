@@ -1,6 +1,8 @@
 package com.thuthi.kakaobotspringserver.commandHandler;
 
 import com.thuthi.kakaobotspringserver.domain.ChatData;
+import com.thuthi.kakaobotspringserver.domain.result.ResultMessage;
+import com.thuthi.kakaobotspringserver.domain.result.ResultStatus;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -9,12 +11,12 @@ import java.util.Optional;
 public abstract class CommandHandler {
     private final Optional<TargetFilter> targetFilter;
 
-    final public Optional<String> handle(ChatData chatdata) {
+    final public ResultMessage handle(ChatData chatdata) {
         if (!targetFilter.map(tf -> tf.filter(chatdata.getRoom(), chatdata.getSender())).orElse(false)) {
-            return Optional.empty();
+            return new ResultMessage(ResultStatus.FILTERED, null);
         }
-        return Optional.of(process(chatdata));
+        return process(chatdata);
     }
 
-    abstract String process(ChatData chatData);
+    abstract ResultMessage process(ChatData chatData);
 }
