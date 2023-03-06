@@ -6,7 +6,6 @@ import com.thuthi.kakaobotspringserver.domain.Command;
 import com.thuthi.kakaobotspringserver.domain.result.ResultMessage;
 import com.thuthi.kakaobotspringserver.domain.result.ResultStatus;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +16,7 @@ public class CommandHandlerMapper {
     public CommandHandlerMapper() {
         eventMapper.put(Command.HELLO, (chatData) -> new ResultMessage(ResultStatus.SUCCESS, "hello"));
         addCommandHandler(Command.ECHO, new EchoCommandHandler());
+        addCommandHandler(Command.EXIT, new ExitCommandHandler());
     }
 
     public boolean addCommandHandler(Command command, CommandHandler commandHandler) {

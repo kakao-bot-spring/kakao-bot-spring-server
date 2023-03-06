@@ -54,19 +54,14 @@ public class SocketMessageHandler extends Thread {
 
             ResultMessage result = getResult(inputString);
             switch (result.resultStatus()) {
-                case SUCCESS:
+                case SUCCESS -> {
                     outputStream.write((result.message() + '\n').getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                     log.info("[SOCKET] sended message: " + result.message());
-                    continue;
-
-                case FILTERED:
-                    log.info("[SOCKET] filtered");
-                    break;
-
-                case FAIL:
-                    log.info("[SOCKET] fail by " + result.message());
-                    break;
+                }
+                case FILTERED -> log.info("[SOCKET] filtered");
+                case FAIL -> log.info("[SOCKET] fail by " + result.message());
+                case EXIT -> socket.close();
             }
         }
     }
