@@ -16,12 +16,6 @@ public class EchoCommandHandler extends CommandHandler {
 
     @Override
     ResultMessage process(ChatData chatData) {
-        try {
-            String message = (new ObjectMapper()).writeValueAsString(chatData);
-            return new ResultMessage(ResultStatus.SUCCESS, message);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new ResultMessage(ResultStatus.FAIL, Arrays.toString(e.getStackTrace()));
-        }
+        return new ResultMessage(ResultStatus.SUCCESS, chatData.getMsg());
     }
 }

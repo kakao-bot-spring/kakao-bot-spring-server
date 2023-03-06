@@ -50,12 +50,16 @@ public class SocketMessageHandler extends Thread {
             ResultMessage result = getResult(inputString);
             switch (result.resultStatus()) {
                 case SUCCESS -> {
-                    outputStream.write((result.message() + '\n').getBytes(StandardCharsets.UTF_8));
+                    outputStream.write((result.message()).getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                     log.info("[SOCKET] sended message: " + result.message());
                 }
                 case FILTERED -> log.info("[SOCKET] filtered");
-                case FAIL -> log.info("[SOCKET] fail by " + result.message());
+                case FAIL -> {
+                    outputStream.write((result.message()).getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
+                    log.info("[SOCKET] fail by " + result.message());
+                }
                 case EXIT -> socket.close();
             }
         }
@@ -65,6 +69,7 @@ public class SocketMessageHandler extends Thread {
         HashMap<String, Object> hashMap = objectMapper.readValue(line, HashMap.class);
         Command command = Command.valueOf(((String) hashMap.get("command")).toUpperCase());
         ChatData chatData = objectMapper.convertValue(hashMap.get("data"), ChatData.class);
-        return commandHandlerMapper.process(command, chatData);
+        ResultMessage resultMessage = commandHandlerMapper.process(command, chatData);
+        return new ResultMessage(resultMessage.resultStatus(), String.format("{\"room\": \"%s\", \"msg\": \"%s\"}\n", chatData.getRoom(), resultMessage.message()));
     }
 }
