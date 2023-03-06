@@ -11,8 +11,11 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public class PpomppuCommandHandler extends CommandHandler {
-    public PpomppuCommandHandler() {
+
+    private final String configFilePath;
+    public PpomppuCommandHandler(String configFilePath) {
         super(Optional.of(new TargetFilter("조병우", "조병우")), "/");
+        this.configFilePath = configFilePath;
     }
 
     @Override
@@ -31,14 +34,16 @@ public class PpomppuCommandHandler extends CommandHandler {
                 }
                 return deleteWord(splits[1]);
             }
+            default -> {
+                return new ResultMessage(ResultStatus.FAIL, "등록되지 않은 명령어 입니다.");
+            }
         }
-        return null;
     }
 
     private ResultMessage registerWord(String word) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            File file = new File("./config.json");
+            File file = new File(configFilePath);
 
             HashSet<String> readValue = new HashSet<String>(
                     objectMapper.readValue(file, ArrayList.class));
@@ -55,7 +60,7 @@ public class PpomppuCommandHandler extends CommandHandler {
     private ResultMessage deleteWord(String word) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            File file = new File("./config.json");
+            File file = new File(configFilePath);
 
             HashSet<String> readValue = new HashSet<String>(
                     objectMapper.readValue(file, ArrayList.class));

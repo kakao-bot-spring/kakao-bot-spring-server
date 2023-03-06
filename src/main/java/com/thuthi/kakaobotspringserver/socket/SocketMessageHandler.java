@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,12 +26,12 @@ public class SocketMessageHandler extends Thread {
 
     @Override
     public void run() {
-        try (DataOutputStream outputStream = new DataOutputStream(
-                socket.getOutputStream()); BufferedReader inputStream = new BufferedReader(
-                new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
+        try (DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+             BufferedReader inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
             processIO(inputStream, outputStream);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
         } finally {
             try {
                 if (!socket.isClosed()) {
@@ -38,7 +39,8 @@ public class SocketMessageHandler extends Thread {
                     socket.close();
                 }
             } catch (Exception e) {
-                log.error(e);
+                log.error(e.getMessage());
+                log.error(Arrays.toString(e.getStackTrace()));
             }
         }
     }
@@ -69,7 +71,12 @@ public class SocketMessageHandler extends Thread {
         HashMap<String, Object> hashMap = objectMapper.readValue(line, HashMap.class);
         Command command = Command.valueOf(((String) hashMap.get("command")).toUpperCase());
         ChatData chatData = objectMapper.convertValue(hashMap.get("data"), ChatData.class);
+
         ResultMessage resultMessage = commandHandlerMapper.process(command, chatData);
-        return new ResultMessage(resultMessage.resultStatus(), String.format("{\"room\": \"%s\", \"msg\": \"%s\"}\n", chatData.getRoom(), resultMessage.message()));
+        return new ResultMessage(resultMessage.resultStatus(), refineMessage(chatData.getRoom(), resultMessage.message()));
+    }
+
+    private String refineMessage(String room, String message) {
+        return String.format("{\"room\": \"%s\", \"msg\": \"%s\"}\n", room, message.replaceAll("\n", "\\\\n"));
     }
 }

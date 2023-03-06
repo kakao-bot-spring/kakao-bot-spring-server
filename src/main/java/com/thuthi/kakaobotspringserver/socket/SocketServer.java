@@ -1,6 +1,7 @@
 package com.thuthi.kakaobotspringserver.socket;
 
 import com.thuthi.kakaobotspringserver.commandHandler.CommandHandlerMapper;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class SocketServer {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
+                log.error(Arrays.toString(e.getStackTrace()));
             }
         }).start();
 
