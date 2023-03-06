@@ -8,7 +8,7 @@ import java.util.Optional;
 public class ExitCommandHandler extends CommandHandler {
 
     public ExitCommandHandler() {
-        super(Optional.empty());
+        super(Optional.empty(), "/");
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class EchoCommandHandler extends CommandHandler {
     public EchoCommandHandler() {
-        super(Optional.empty());
+        super(Optional.empty(), "/");
     }
 
     @Override

@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 public class SocketMessageHandler extends Thread {
     private final Socket socket;
     private final CommandHandlerMapper commandHandlerMapper;
-    private final String prefix;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -48,10 +47,6 @@ public class SocketMessageHandler extends Thread {
         String inputString;
         while (!socket.isClosed() && (inputString = inputStream.readLine()) != null) {
             log.info("[SOCKET] received message: " + inputString);
-            if (!inputString.startsWith(prefix)) {
-                continue;
-            }
-
             ResultMessage result = getResult(inputString);
             switch (result.resultStatus()) {
                 case SUCCESS -> {
