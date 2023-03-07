@@ -45,7 +45,7 @@ public class SocketMessageHandler extends Thread {
         }
     }
 
-    private void processIO(BufferedReader inputStream, DataOutputStream outputStream) throws IOException {
+    private void processIO(BufferedReader inputStream, DataOutputStream outputStream) throws Exception {
         String inputString;
         while (!socket.isClosed() && (inputString = inputStream.readLine()) != null) {
             log.info("[SOCKET] received message: " + inputString);
@@ -77,6 +77,9 @@ public class SocketMessageHandler extends Thread {
     }
 
     private String refineMessage(String room, String message) {
+        if (message == null) {
+            return "";
+        }
         return String.format("{\"room\": \"%s\", \"msg\": \"%s\"}\n", room, message.replaceAll("\n", "\\\\n"));
     }
 }
